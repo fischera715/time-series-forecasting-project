@@ -89,13 +89,13 @@ def holt_winters_forecast(series, steps=horizon):
 
     return fit, forecast
     
-residuals = results.resid
-
-st.subheader("Residual Diagnostics")
-
-fig, ax = plt.subplots()
-ax.plot(residuals)
-st.pyplot(fig)
+    residuals = results.resid
+    
+    st.subheader("Residual Diagnostics")
+    
+    fig, ax = plt.subplots()
+    ax.plot(residuals)
+    st.pyplot(fig)
 
 st.subheader("Holt-Winters Forecast")
 
