@@ -199,22 +199,27 @@ def evaluate_models(series, ml_results):
 
 st.subheader("Model Comparison")
 
-stores_to_compare = [20, 34, 33]
+selected_stores = st.multiselect(
+    "Select 3 stores for comparison",
+    stores,
+    default=[20, 34, 33]
+)
 
-if st.button("Run Model Comparison for All Stores"):
+if st.button("Run Model Comparison"):
 
-    for store in stores_to_compare:
+    if len(selected_stores) != 3:
+        st.warning("Please select exactly 3 stores.")
+    else:
+        for store in selected_stores:
 
-        st.markdown(f"### Store {store}")
+            st.markdown(f"### Store {store}")
 
-        store_series = get_store_series(df, store)
+            store_series = get_store_series(df, store)
 
-        ml_results = run_ml_models(df, store)
-        results_table = evaluate_models(store_series, ml_results)
+            ml_results = run_ml_models(df, store)
+            results_table = evaluate_models(store_series, ml_results)
 
-        st.write(results_table)
-
-
+            st.write(results_table)
 
 
 
