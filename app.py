@@ -73,6 +73,32 @@ if st.button("Run SARIMA Forecast"):
     ax.legend()
     st.pyplot(fig)
 
+def holt_winters_forecast(series, steps=52):
+    model = ExponentialSmoothing(
+        series,
+        trend='add',
+        seasonal='add',
+        seasonal_periods=52
+    )
+
+    fit = model.fit()
+    forecast = fit.forecast(steps)
+
+    return fit, forecast
+
+st.subheader("Holt-Winters Forecast")
+
+if st.button("Run Holt-Winters Forecast"):
+    fit, forecast = holt_winters_forecast(series)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(series, label="Actual")
+    ax.plot(forecast, label="Forecast")
+
+    ax.legend()
+    st.pyplot(fig)
+
 
 
 
