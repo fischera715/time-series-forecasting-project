@@ -36,6 +36,43 @@ series = get_store_series(df, selected_store)
 
 st.line_chart(series)
 
+def sarima_forecast(series, steps=52):
+    model = SARIMAX(
+        series,
+        order=(1, 0, 1),
+        seasonal_order=(0, 0, 1, 52),
+        enforce_stationarity=False,
+        enforce_invertibility=False
+    )
+
+    results = model.fit(disp=False)
+
+    forecast_obj = results.get_forecast(steps=steps)
+    pred = forecast_obj.predicted_mean
+    conf_int = forecast_obj.conf_int()
+
+    return results, pred, conf_int
+
+st.subheader("SARIMA Forecast")
+
+if st.button("Run SARIMA Forecast"):
+    results, pred, conf_int = sarima_forecast(series)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(series, label="Actual")
+    ax.plot(pred, label="Forecast")
+
+    ax.fill_between(
+        conf_int.index,
+        conf_int.iloc[:, 0],
+        conf_int.iloc[:, 1],
+        alpha=0.3
+    )
+
+    ax.legend()
+    st.pyplot(fig)
+
 
 
 
