@@ -44,3 +44,10 @@ Using Streamlit, this app includes:
 - Machine learning forecasts
 - Model performance comparison (MAE & RMSE)
 - Visual comparison of predictions
+
+## Conclusion
+This project explores time series forecasting for Walmart retail sales using both statistical and machine learning approaches. The Streamlit dashboard provides an interactive way to analyze store-level sales behavior and compare different forecasting methods.
+
+By combining classical time series models (SARIMA and Holt-Winters) with machine learning models (Random Forest and Neural Networks), the project demonstrates different approaches to capturing trend, seasonality, and nonlinear patterns in real-world retail data.
+
+The dashboard is designed as a decision-support tool that allows users to explore how different models behave under varying store conditions.
