@@ -5,10 +5,9 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 df = pd.read_csv("walmart-sales-dataset-of-45stores.csv")
 df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
-stores = [1, 20, 33]
 
+stores = [1, 20, 33]
 store_choice = st.selectbox("Select Store", stores)
-horizon = st.slider("Forecast Horizon (weeks)", 4, 52, 12)
 
 store_df = df[df['Store'] == store_choice].sort_values('Date')
 store_df = store_df.set_index('Date')
@@ -29,5 +28,27 @@ st.title("Walmart Sales Forecasting")
 st.subheader("Historical Sales")
 st.line_chart(series)
 
-st.subheader("Forecast (Holt-Winters)")
+horizon = st.slider("Forecast Horizon (weeks)", 4, 52, 12)
+
+if model_choice == "Holt-Winters":
+    forecast = hw_forecast
+elif model_choice == "SARIMA":
+    forecast = sarima_forecast
+elif model_choice == "Random Forest":
+    forecast = rf_forecast
+elif model_choice == "Neural Net":
+    forecast = nn_forecast
+
+st.line_chart(series)
 st.line_chart(forecast[:horizon])
+
+
+
+
+
+
+
+
+
+
+
