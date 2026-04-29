@@ -83,6 +83,19 @@ if st.button("Run SARIMA Forecast"):
     ax2.plot(residuals)
     ax2.set_title("Residuals")
     st.pyplot(fig2)
+
+def holt_winters_forecast(series, steps=horizon):
+    model = ExponentialSmoothing(
+        series,
+        trend='add',
+        seasonal='add',
+        seasonal_periods=52
+    )
+
+    fit = model.fit()
+    forecast = fit.forecast(steps)
+
+    return fit, forecast
 st.subheader("Holt-Winters Forecast")
 
 if st.button("Run Holt-Winters Forecast"):
