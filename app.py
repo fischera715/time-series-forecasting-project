@@ -52,8 +52,6 @@ series = get_store_series(df, selected_store)
 
 st.line_chart(series)
 
-horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
-
 def sarima_forecast(series, steps=horizon):
     model = SARIMAX(
         series,
@@ -75,9 +73,9 @@ st.subheader("Model Identification")
 col_acf, col_text = st.columns([2, 1])
 
 with col_acf:
-    fig_acf, ax_acf = plt.subplots(figsize=(8, 4))
-    plot_acf(series.dropna(), ax=ax_acf, lags=52)
-    st.pyplot(fig_acf)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    plot_acf(series.diff(52).dropna(), ax=ax, lags=52) 
+    plt.show()
 
 with col_text:
     st.write("""
@@ -86,6 +84,8 @@ with col_text:
     strong **yearly seasonality**. This justifies our use of 
     Seasonal ARIMA (SARIMA) and Holt-Winters.
     """)
+
+horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
 
 st.subheader("SARIMA Forecast")
 
