@@ -30,18 +30,8 @@ st.line_chart(series)
 
 horizon = st.slider("Forecast Horizon (weeks)", 4, 52, 12)
 
-if model_choice == "Holt-Winters":
-    forecast = hw_forecast
-elif model_choice == "SARIMA":
-    forecast = sarima_forecast
-elif model_choice == "Random Forest":
-    forecast = rf_forecast
-elif model_choice == "Neural Net":
-    forecast = nn_forecast
-
-st.line_chart(series)
+st.subheader("Forecast (Holt-Winters)")
 st.line_chart(forecast[:horizon])
-
 
 
 
