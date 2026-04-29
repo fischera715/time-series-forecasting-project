@@ -32,6 +32,8 @@ st.title("Walmart Sales Forecasting Dashboard")
 stores = sorted(df['Store'].unique())
 selected_store = st.selectbox("Select Store", stores)
 
+horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
+
 series = get_store_series(df, selected_store)
 
 st.line_chart(series)
