@@ -62,7 +62,6 @@ if st.button("Run SARIMA Forecast"):
     results, pred, conf_int = sarima_forecast(series)
 
     fig, ax = plt.subplots(figsize=(10, 5))
-
     ax.plot(series, label="Actual")
     ax.plot(pred, label="Forecast")
 
@@ -76,27 +75,14 @@ if st.button("Run SARIMA Forecast"):
     ax.legend()
     st.pyplot(fig)
 
-def holt_winters_forecast(series, steps=horizon):
-    model = ExponentialSmoothing(
-        series,
-        trend='add',
-        seasonal='add',
-        seasonal_periods=52
-    )
+    st.subheader("Residual Diagnostics (SARIMA)")
 
-    fit = model.fit()
-    forecast = fit.forecast(steps)
-
-    return fit, forecast
-    
     residuals = results.resid
-    
-    st.subheader("Residual Diagnostics")
-    
-    fig, ax = plt.subplots()
-    ax.plot(residuals)
-    st.pyplot(fig)
 
+    fig2, ax2 = plt.subplots()
+    ax2.plot(residuals)
+    ax2.set_title("Residuals")
+    st.pyplot(fig2)
 st.subheader("Holt-Winters Forecast")
 
 if st.button("Run Holt-Winters Forecast"):
