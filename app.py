@@ -42,8 +42,6 @@ that impact all locations simultaneously.
 
 st.line_chart(total_sales_series)
 
-horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
-
 total_mae_baseline = total_sales_series.mean() * 0.1
 st.info(f"System-wide average weekly revenue: ${total_sales_series.mean():,.2f}")
 
@@ -53,6 +51,8 @@ selected_store = st.selectbox("Select Store", stores)
 series = get_store_series(df, selected_store)
 
 st.line_chart(series)
+
+horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
 
 def sarima_forecast(series, steps=horizon):
     model = SARIMAX(
