@@ -4,6 +4,7 @@ import numpy as np
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from statsmodels.graphics.tsaplots import plot_acf
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
@@ -87,6 +88,10 @@ def holt_winters_forecast(series, steps=horizon):
     forecast = fit.forecast(steps)
 
     return fit, forecast
+
+fig, ax = plt.subplots()
+plot_acf(residuals, ax=ax, lags=40)
+st.pyplot(fig)
 
 st.subheader("Holt-Winters Forecast")
 
