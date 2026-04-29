@@ -129,12 +129,10 @@ def run_ml_models(df, store_id):
     X_train, X_test = X[:split], X[split:]
     y_train, y_test = y[:split], y[split:]
 
-    # Random Forest
     rf = RandomForestRegressor(n_estimators=200, random_state=42)
     rf.fit(X_train, y_train)
     rf_pred = rf.predict(X_test)
 
-    # Neural Net
     nn = MLPRegressor(hidden_layer_sizes=(50, 25), max_iter=1000, random_state=42)
     nn.fit(X_train, y_train)
     nn_pred = nn.predict(X_test)
@@ -166,7 +164,6 @@ if st.button("Run ML Models"):
     ax.legend()
     st.pyplot(fig)
 
-    # Metrics table
     st.write("### Model Performance")
     st.write({
         "RF MAE": results["rf_mae"],
@@ -174,6 +171,42 @@ if st.button("Run ML Models"):
         "RF RMSE": results["rf_rmse"],
         "NN RMSE": results["nn_rmse"]
     })
+
+def evaluate_models(series, ml_results):
+    sarima_res, sarima_pred, _ = sarima_forecast(series, steps=len(ml_results["y_test"]))
+    sarima_actual = series[-len(sarima_pred):]
+    sarima_mae = mean_absolute_error(sarima_actual, sarima_pred)
+    sarima_rmse = np.sqrt(mean_squared_error(sarima_actual, sarima_pred))
+
+    _, hw_forecast = holt_winters_forecast(series, steps=len(ml_results["y_test"]))
+    hw_actual = series[-len(hw_forecast):]
+    hw_mae = mean_absolute_error(hw_actual, hw_forecast)
+    hw_rmse = np.sqrt(mean_squared_error(hw_actual, hw_forecast))
+
+    rf_mae = ml_results["rf_mae"]
+    rf_rmse = ml_results["rf_rmse"]
+
+    nn_mae = ml_results["nn_mae"]
+    nn_rmse = ml_results["nn_rmse"]
+
+    results_table = pd.DataFrame({
+        "Model": ["SARIMA", "Holt-Winters", "Random Forest", "Neural Net"],
+        "MAE": [sarima_mae, hw_mae, rf_mae, nn_mae],
+        "RMSE": [sarima_rmse, hw_rmse, rf_rmse, nn_rmse]
+    })
+
+    return results_table
+
+st.subheader("Model Comparison")
+
+if st.button("Compare All Models"):
+
+    ml_results = run_ml_models(df, selected_store)
+    results_table = evaluate_models(series, ml_results)
+
+    st.write(results_table)
+
+    st.bar_chart(results_table.set_index("Model"))
 
 
 
