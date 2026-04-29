@@ -50,6 +50,8 @@ selected_store = st.selectbox("Select Store", stores)
 
 series = get_store_series(df, selected_store)
 
+horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
+
 st.line_chart(series)
 
 def sarima_forecast(series, steps=horizon):
@@ -84,8 +86,6 @@ with col_text:
     strong **yearly seasonality**. This justifies our use of 
     Seasonal ARIMA (SARIMA) and Holt-Winters.
     """)
-
-horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
 
 st.subheader("SARIMA Forecast")
 
