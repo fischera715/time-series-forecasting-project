@@ -1,11 +1,8 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # -----------------------------
 # LOAD DATA
@@ -31,9 +28,21 @@ series = store_df['Weekly_Sales']
 train_size = int(len(series) * 0.8)
 train, test = series[:train_size], series[train_size:]
 
-# -----------------------------
-# HOLT-WINTERS MODEL
-# -----------------------------
+horizon = len(test)
+
+# =====================================================
+# 1. ACTUAL TIME SERIES
+# =====================================================
+st.subheader("Actual Sales Data")
+
+fig1, ax1 = plt.subplots()
+ax1.plot(series.index, series, label="Actual Sales")
+ax1.legend()
+st.pyplot(fig1)
+
+# =====================================================
+# 2. HOLT-WINTERS MODEL
+# =====================================================
 hw_model = ExponentialSmoothing(
     train,
     trend='add',
@@ -42,11 +51,20 @@ hw_model = ExponentialSmoothing(
 )
 
 hw_fit = hw_model.fit()
-hw_forecast = hw_fit.forecast(len(test))
+hw_forecast = hw_fit.forecast(horizon)
 
-# -----------------------------
-# SARIMA MODEL
-# -----------------------------
+st.subheader("Holt-Winters Forecast")
+
+fig2, ax2 = plt.subplots()
+ax2.plot(train.index, train, label="Train")
+ax2.plot(test.index, test, label="Actual")
+ax2.plot(test.index, hw_forecast, label="Holt-Winters Forecast")
+ax2.legend()
+st.pyplot(fig2)
+
+# =====================================================
+# 3. SARIMA MODEL
+# =====================================================
 sarima_model = SARIMAX(
     train,
     order=(1, 0, 1),
@@ -56,54 +74,16 @@ sarima_model = SARIMAX(
 )
 
 sarima_fit = sarima_model.fit(disp=False)
-sarima_forecast = sarima_fit.forecast(len(test))
+sarima_forecast = sarima_fit.forecast(horizon)
 
-# -----------------------------
-# ERROR METRICS
-# -----------------------------
-def get_metrics(true, pred):
-    mae = mean_absolute_error(true, pred)
-    rmse = np.sqrt(mean_squared_error(true, pred))
-    return mae, rmse
+st.subheader("SARIMA Forecast")
 
-hw_mae, hw_rmse = get_metrics(test, hw_forecast)
-sarima_mae, sarima_rmse = get_metrics(test, sarima_forecast)
-
-# -----------------------------
-# DISPLAY ACTUAL VS FORECASTS
-# -----------------------------
-st.subheader("Actual vs Forecast Comparison")
-
-fig, ax = plt.subplots()
-
-ax.plot(train.index, train, label="Train Data", alpha=0.5)
-ax.plot(test.index, test, label="Actual Test Data", color="black")
-
-ax.plot(test.index, hw_forecast, label="Holt-Winters Forecast")
-ax.plot(test.index, sarima_forecast, label="SARIMA Forecast")
-
-ax.legend()
-st.pyplot(fig)
-
-# -----------------------------
-# METRICS TABLE
-# -----------------------------
-st.subheader("Model Performance")
-
-metrics_df = pd.DataFrame({
-    "Model": ["Holt-Winters", "SARIMA"],
-    "MAE": [hw_mae, sarima_mae],
-    "RMSE": [hw_rmse, sarima_rmse]
-})
-
-st.dataframe(metrics_df)
-
-# -----------------------------
-# INSIGHT
-# -----------------------------
-best_model = metrics_df.loc[metrics_df["RMSE"].idxmin(), "Model"]
-
-st.success(f"Best performing model for Store {store_choice}: {best_model}")
+fig3, ax3 = plt.subplots()
+ax3.plot(train.index, train, label="Train")
+ax3.plot(test.index, test, label="Actual")
+ax3.plot(test.index, sarima_forecast, label="SARIMA Forecast")
+ax3.legend()
+st.pyplot(fig3)
 
 
 
