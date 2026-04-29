@@ -32,7 +32,7 @@ def get_store_series(df, store_id):
 
 st.title("Walmart Sales Forecasting Dashboard")
 
-st.header("Global Sales Overview (The 'System')")
+st.header("Global Sales Overview")
 
 st.write("""
 Before analyzing individual stores, we look at the total system-wide sales. 
@@ -70,6 +70,22 @@ def sarima_forecast(series, steps=horizon):
     conf_int = forecast_obj.conf_int()
 
     return results, pred, conf_int
+
+st.subheader("Model Identification")
+col_acf, col_text = st.columns([2, 1])
+
+with col_acf:
+    fig_acf, ax_acf = plt.subplots(figsize=(8, 4))
+    plot_acf(series.dropna(), ax=ax_acf, lags=52)
+    st.pyplot(fig_acf)
+
+with col_text:
+    st.write("""
+    **Autocorrelation Analysis:**
+    The ACF plot shows significant spikes at lag 52, confirming 
+    strong **yearly seasonality**. This justifies our use of 
+    Seasonal ARIMA (SARIMA) and Holt-Winters.
+    """)
 
 st.subheader("SARIMA Forecast")
 
@@ -189,13 +205,15 @@ if st.button("Run ML Models"):
     ax.legend()
     st.pyplot(fig)
 
-    st.write("### Model Performance")
-    st.write({
-        "RF MAE": results["rf_mae"],
-        "NN MAE": results["nn_mae"],
-        "RF RMSE": results["rf_rmse"],
-        "NN RMSE": results["nn_rmse"]
-    })
+    st.write("### Model Performance Analysis")
+    m1, m2, m3, m4 = st.columns(4)
+    
+    m1.metric("RF MAE", f"${results['rf_mae']:,.0f}", delta_color="inverse")
+    m2.metric("NN MAE", f"${results['nn_mae']:,.0f}", delta_color="inverse")
+    m3.metric("RF RMSE", f"${results['rf_rmse']:,.0f}")
+    m4.metric("NN RMSE", f"${results['nn_rmse']:,.0f}")
+    
+    st.caption("Lower MAE (Mean Absolute Error) indicates a more reliable forecast for daily operations.")
 
 def evaluate_models(series, ml_results):
     sarima_res, sarima_pred, _ = sarima_forecast(series, steps=len(ml_results["y_test"]))
@@ -245,7 +263,11 @@ if st.button("Run Model Comparison"):
             results_table = evaluate_models(store_series, ml_results)
 
             st.write(results_table)
-
+    
+    st.divider()
+    st.header("Final Model Recommendation")
+    best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
+    st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
 
 
 
