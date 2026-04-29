@@ -12,6 +12,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 import matplotlib.pyplot as plt
 
+# Loading Data
+
 @st.cache_data
 def load_data():
     df = pd.read_csv("walmart-sales-dataset-of-45stores.csv")
@@ -50,9 +52,15 @@ selected_store = st.selectbox("Select Store", stores)
 
 series = get_store_series(df, selected_store)
 
+# Full Dataset Time Series
+
 st.line_chart(series)
 
+# Choose Forecast Horizon
+
 horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
+
+# SARIMA Forecast
 
 def sarima_forecast(series, steps=horizon):
     model = SARIMAX(
@@ -71,13 +79,14 @@ def sarima_forecast(series, steps=horizon):
 
     return results, pred, conf_int
 
+# ACF To Determine What Model to Use
+
 st.subheader("Model Identification")
 col_acf, col_text = st.columns([2, 1])
-
 with col_acf:
-    fig, ax = plt.subplots(figsize=(10, 5))
-    plot_acf(series.diff(52).dropna(), ax=ax, lags=52) 
-    plt.show()
+    fig, ax = plt.subplots(figsize=(8, 4))
+    plot_acf(series.diff(52).dropna(), ax=ax, lags=52)
+    st.pyplot(fig)
 
 with col_text:
     st.write("""
