@@ -38,7 +38,7 @@ st.line_chart(series)
 
 horizon = st.slider("Forecast Horizon (weeks)", 4, 104, 52)
 
-def sarima_forecast(series, steps=52):
+def sarima_forecast(series, steps=horizon):
     model = SARIMAX(
         series,
         order=(1, 0, 1),
@@ -75,7 +75,7 @@ if st.button("Run SARIMA Forecast"):
     ax.legend()
     st.pyplot(fig)
 
-def holt_winters_forecast(series, steps=52):
+def holt_winters_forecast(series, steps=horizon):
     model = ExponentialSmoothing(
         series,
         trend='add',
