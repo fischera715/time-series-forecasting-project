@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 df = pd.read_csv("walmart-sales-dataset-of-45stores.csv")
-df['Date'] = pd.to_datetime(df['Date'])
-
+df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
 stores = [1, 20, 33]
 
 store_choice = st.selectbox("Select Store", stores)
