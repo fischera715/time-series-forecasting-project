@@ -21,6 +21,8 @@ def load_data():
 
 df = load_data()
 
+total_sales_series = df.groupby('Date')['Weekly_Sales'].sum()
+
 def get_store_series(df, store_id):
     temp = df[df['Store'] == store_id].copy()
     temp = temp.sort_values('Date')
@@ -29,6 +31,19 @@ def get_store_series(df, store_id):
     return temp['Weekly_Sales']
 
 st.title("Walmart Sales Forecasting Dashboard")
+
+st.header("Global Sales Overview (The 'System')")
+
+st.write("""
+Before analyzing individual stores, we look at the total system-wide sales. 
+This helps identify macro-trends and seasonal patterns (like Black Friday) 
+that impact all locations simultaneously.
+""")
+
+st.line_chart(total_sales_series)
+
+total_mae_baseline = total_sales_series.mean() * 0.1 # Example placeholder
+st.info(f"System-wide average weekly revenue: ${total_sales_series.mean():,.2f}")
 
 stores = sorted(df['Store'].unique())
 selected_store = st.selectbox("Select Store", stores)
