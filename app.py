@@ -197,32 +197,22 @@ def evaluate_models(series, ml_results):
 
     return results_table
 
-st.subheader("Model Comparison Across Stores")
+st.subheader("Model Comparison")
 
-if st.button("Compare All Models"):
+stores_to_compare = [20, 34, 33]
 
-    stores_to_compare = [20, 34, 33]
-
-    all_results = []
+if st.button("Run Model Comparison for All Stores"):
 
     for store in stores_to_compare:
 
-        series_store = get_store_series(df, store)
+        st.markdown(f"### Store {store}")
+
+        store_series = get_store_series(df, store)
+
         ml_results = run_ml_models(df, store)
-        results_table = evaluate_models(series_store, ml_results)
+        results_table = evaluate_models(store_series, ml_results)
 
-        results_table["Store"] = store
-        all_results.append(results_table)
-
-    final_table = pd.concat(all_results)
-
-    summary = final_table.groupby("Model")[["MAE", "RMSE"]].mean().reset_index()
-
-    st.write(summary)
-
-    st.bar_chart(summary.set_index("Model"))
-
-
+        st.write(results_table)
 
 
 
