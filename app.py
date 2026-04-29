@@ -96,6 +96,8 @@ with col_text:
     Seasonal ARIMA (SARIMA) and Holt-Winters.
     """)
 
+# Run SARIMA Forecast Button Section
+
 st.subheader("SARIMA Forecast")
 
 if st.button("Run SARIMA Forecast"):
@@ -136,6 +138,15 @@ def holt_winters_forecast(series, steps=horizon):
     forecast = fit.forecast(steps)
 
     return fit, forecast
+
+st.subheader("Residual Diagnostics")
+fig_resid, ax_resid = plt.subplots(figsize=(8, 4))
+plot_acf(results.resid, ax=ax_resid)
+st.pyplot(fig_resid)
+st.write("If these bars are inside the blue, the SARIMA model has successfully captured the sales patterns!")
+
+# Holt-Winters Forecast Button
+
 st.subheader("Holt-Winters Forecast")
 
 if st.button("Run Holt-Winters Forecast"):
