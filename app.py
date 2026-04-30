@@ -83,6 +83,7 @@ def sarima_forecast(series, steps=horizon):
 
 st.subheader("Model Identification")
 col_acf, col_text = st.columns([2, 1])
+
 with col_acf:
     fig, ax = plt.subplots(figsize=(8, 4))
     plot_acf(series.diff(52).dropna(), ax=ax, lags=52)
@@ -180,8 +181,6 @@ def create_ml_features(df, store_id):
 
     return X, y
 
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-
 def run_ml_models(df, store_id):
     X, y = create_ml_features(df, store_id)
 
@@ -210,12 +209,13 @@ def run_ml_models(df, store_id):
 
     return results
 
+# Machine Learning Model Section
+
 st.subheader("Machine Learning Forecast (Random Forest + Neural Net)")
 
 if st.button("Run ML Models"):
     results = run_ml_models(df, selected_store)
 
-    # Plot predictions
     fig, ax = plt.subplots(figsize=(10, 5))
 
     ax.plot(results["y_test"], label="Actual")
@@ -260,6 +260,8 @@ def evaluate_models(series, ml_results):
 
     return results_table
 
+# Comparison Between all Models
+
 st.subheader("Model Comparison")
 
 selected_stores = st.multiselect(
@@ -284,12 +286,12 @@ if st.button("Run Model Comparison"):
 
             st.write(results_table)
     
-    st.divider()
-    st.header("Final Model Recommendation")
-    best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
-    st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
-
-
+        st.divider()
+        st.header("Final Model Recommendation")
+        best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
+        st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
+    
+    
 
 
 
