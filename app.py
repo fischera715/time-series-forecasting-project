@@ -283,14 +283,14 @@ if st.button("Run Model Comparison"):
 
             ml_results = run_ml_models(df, store)
             results_table = evaluate_models(store_series, ml_results)
-
+    
+            st.header("Final Model Recommendation")
+            best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
+            st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
+            
             st.write(results_table)
     
         st.divider()
-        st.header("Final Model Recommendation")
-        best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
-        st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
-    
     
 
 
