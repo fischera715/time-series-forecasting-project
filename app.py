@@ -107,26 +107,27 @@ if st.button("Run SARIMA Forecast"):
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(series, label="Actual")
     ax.plot(pred, label="Forecast")
-
-    ax.fill_between(
-        conf_int.index,
-        conf_int.iloc[:, 0],
-        conf_int.iloc[:, 1],
-        alpha=0.3
-    )
-
+    ax.fill_between(conf_int.index, conf_int.iloc[:, 0], conf_int.iloc[:, 1], alpha=0.3)
     ax.legend()
     st.pyplot(fig)
 
     st.subheader("Residual Diagnostics (SARIMA)")
-
-    residuals = results.resid
-
-    fig2, ax2 = plt.subplots()
-    ax2.plot(residuals)
-    ax2.set_title("Residuals")
-    st.pyplot(fig2)
-
+    col_res1, col_res2 = st.columns(2)
+    
+    with col_res1:
+        fig2, ax2 = plt.subplots()
+        ax2.plot(results.resid)
+        ax2.set_title("Residuals (Error over Time)")
+        st.pyplot(fig2)
+        
+    with col_res2:
+        fig_resid, ax_resid = plt.subplots()
+        plot_acf(results.resid, ax=ax_resid)
+        ax_resid.set_title("Residual ACF (White Noise Check)")
+        st.pyplot(fig_resid)
+    
+    st.caption("Interpretation: If the Residual ACF bars are within the blue area, the model has captured all available patterns.")
+    
 def holt_winters_forecast(series, steps=horizon):
     model = ExponentialSmoothing(
         series,
@@ -134,15 +135,8 @@ def holt_winters_forecast(series, steps=horizon):
         seasonal='add',
         seasonal_periods=52
     )
-
     fit = model.fit()
     forecast = fit.forecast(steps)
-
-    st.subheader("Residual Diagnostics")
-    fig_resid, ax_resid = plt.subplots(figsize=(8, 4))
-    plot_acf(results.resid, ax=ax_resid)
-    st.pyplot(fig_resid)
-    st.write("If these bars are inside the blue, the SARIMA model has successfully captured the sales patterns!")
     return fit, forecast
 
 # Holt-Winters Forecast Button
@@ -270,27 +264,21 @@ selected_stores = st.multiselect(
 )
 
 if st.button("Run Model Comparison"):
-
     if len(selected_stores) != 3:
         st.warning("Please select exactly 3 stores.")
     else:
         for store in selected_stores:
-
-            st.markdown(f"### Store {store}")
-
+            st.markdown(f"### Store {store} Analysis")
             store_series = get_store_series(df, store)
-
             ml_results = run_ml_models(df, store)
             results_table = evaluate_models(store_series, ml_results)
-    
-            st.header("Final Model Recommendation")
-            best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
-            st.success(f"Based on the lowest MAE, the recommended model for this store is: **{best_model}**")
             
-            st.write(results_table)
-    
-        st.divider()
-    
+            st.table(results_table)
+            
+            # Show the winner for THIS specific store
+            best_model = results_table.loc[results_table['MAE'].idxmin(), 'Model']
+            st.success(f"**Recommended Model for Store {store}:** {best_model}")
+            st.divider()
 
 
 
