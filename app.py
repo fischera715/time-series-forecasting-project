@@ -139,11 +139,11 @@ def holt_winters_forecast(series, steps=horizon):
 
     return fit, forecast
 
-st.subheader("Residual Diagnostics")
-fig_resid, ax_resid = plt.subplots(figsize=(8, 4))
-plot_acf(results.resid, ax=ax_resid)
-st.pyplot(fig_resid)
-st.write("If these bars are inside the blue, the SARIMA model has successfully captured the sales patterns!")
+    st.subheader("Residual Diagnostics")
+    fig_resid, ax_resid = plt.subplots(figsize=(8, 4))
+    plot_acf(results.resid, ax=ax_resid)
+    st.pyplot(fig_resid)
+    st.write("If these bars are inside the blue, the SARIMA model has successfully captured the sales patterns!")
 
 # Holt-Winters Forecast Button
 
