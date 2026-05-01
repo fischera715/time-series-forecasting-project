@@ -89,14 +89,6 @@ with col_acf:
     plot_acf(series.diff(52).dropna(), ax=ax, lags=52)
     st.pyplot(fig)
 
-with col_text:
-    st.write("""
-    **Autocorrelation Analysis:**
-    The ACF plot shows significant spikes at lag 52, confirming 
-    strong **yearly seasonality**. This justifies our use of 
-    Seasonal ARIMA (SARIMA) and Holt-Winters.
-    """)
-
 # Run SARIMA Forecast Button Section
 
 st.subheader("SARIMA Forecast")
